@@ -1,4 +1,10 @@
-define(['jquery', 'backbone', 'jquerymobile', 'handlebars'], function($, Backbone, Mobile){
+define([
+    'jquery',
+    'backbone',
+    'jquerymobile',
+    'handlebars'
+],
+function($, Backbone, Mobile){
 
     var BookView = Backbone.View.extend({
 

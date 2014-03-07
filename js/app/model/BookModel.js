@@ -1,11 +1,15 @@
-define(['jquery', 'backbone'], function($, Backbone){
+define([
+    'jquery',
+    'backbone'
+],
+function($, Backbone){
 
     var BookModel = Backbone.Model.extend({
 
-        urlRoot: '/jq-mobile-bbjs/server/rest/book.php',
+        urlRoot: 'rest/book.php',
 
         initialize: function(){
-            // console.log('init book model');
+            console.log('initialize BookModel.js');
         },
 
         defaults: {
@@ -47,5 +51,4 @@ define(['jquery', 'backbone'], function($, Backbone){
     });
 
     return BookModel;
-
 });

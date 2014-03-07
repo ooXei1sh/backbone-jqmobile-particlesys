@@ -1,3 +1,12 @@
 .hidden {
     display: none;
 }
+
+.ui-not-btn {
+    cursor: default;
+    text-align: left;
+}
+
+.ui-not-btn:hover{
+    background: none repeat scroll 0 0 #F6F6F6 !important;
+}

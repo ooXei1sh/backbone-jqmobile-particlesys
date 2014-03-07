@@ -4,17 +4,17 @@ define(['jquery', 'backbone', 'app/model/BookModel'], function($, Backbone, Book
 
         model: BookModel,
 
-        url: '/jq-mobile-bbjs/server/rest/books.php',
+        url: 'rest/books.php',
 
         initialize: function(models, options) {
             this.type = options.type;
-        },
-
-        // override sync, fetch calls sync method
-        sync: function(method, model, options) {
-            var self = this;
-            return self;
         }
+
+        // // override sync, fetch calls sync method
+        // sync: function(method, model, options) {
+        //     var self = this;
+        //     return self;
+        // }
     });
 
     return BookCollection;

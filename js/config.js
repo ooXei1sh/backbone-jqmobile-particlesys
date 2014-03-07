@@ -17,8 +17,23 @@ require.config({
     }
 });
 
-require(['jquery','backbone','jquerymobile','app/router/AppRouter','src'], function($, Backbone, Mobile, AppRouter){
+require([
+    'jquery',
+    'backbone',
+    'jquerymobile',
+    'app/router/AppRouter',
+    'src'
+],
+function($, Backbone, Mobile, AppRouter){
+    $.mobile.page.prototype.options.theme  = "d";
     $.mobile.linkBindingEnabled = false;
     $.mobile.hashListeningEnabled = false;
-});
 
+    // not working...
+    // $(document).on('mobileinit', function(){
+    //     console.log('!');
+    //     // http://api.jquerymobile.com/global-config/
+    //     $.mobile.page.prototype.options.theme  = 'b';
+    // });
+
+});

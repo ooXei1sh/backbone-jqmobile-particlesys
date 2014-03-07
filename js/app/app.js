@@ -1,17 +1,21 @@
-require(['jquery','backbone','jquerymobile','app/router/AppRouter','src'], function($, Backbone, Mobile, AppRouter){
+require([
+    'jquery',
+    'backbone',
+    'jquerymobile',
+    'app/router/AppRouter',
+    'src'
+],
+function($, Backbone, Mobile, AppRouter){
 
-    // console.log('inside app.js');
+    console.log('inside app.js');
 
     $(function() {
-
         var router = new AppRouter();
-
         Backbone.history.start({
             // .htaccess and root prop below must be set
             pushState: true,
-            root: '/jq-mobile-bbjs/server'
+            root: '/jq-mobile-bbjs/canvas'
         });
-
     });
 
 });

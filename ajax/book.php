@@ -1,5 +1,4 @@
 <?php
-// error_log('server: '.print_r($_SERVER,1).' '.__FILE__.' '.__LINE__,0);
 
 // method
 $method = $_SERVER['REQUEST_METHOD'];
@@ -9,19 +8,21 @@ $method = $_SERVER['REQUEST_METHOD'];
 $headers = getallheaders();
 // error_log('headers: '.print_r($headers,1).' '.__FILE__.' '.__LINE__,0);
 
+// data raw
 $data = file_get_contents('php://input','rb');
-// error_log('raw data: '.print_r($data,1).' '.__FILE__.' '.__LINE__,0);
+// error_log('data: '.print_r($data,1).' '.__FILE__.' '.__LINE__,0);
 
+// pdo
 $db = new PDO('mysql:host=127.0.0.1;dbname=bbjsdb','root','');
+// error_log('server: '.print_r($_SERVER,1).' '.__FILE__.' '.__LINE__,0);
 
 /**
  * Get
  */
 if ($method === 'GET')
 {
-
     if (!empty($_GET)){
-        error_log(print_r($_GET,1).' '.__FILE__.' '.__LINE__,0);
+        // error_log(print_r($_GET,1).' '.__FILE__.' '.__LINE__,0);
         $id = (int) $_GET['id'];
     }
     else {
@@ -40,6 +41,7 @@ if ($method === 'GET')
         WHERE id = :id
         LIMIT 1
     ';
+
     try {
         $s = $db->prepare($sql);
         $s->bindParam(':id', $id, PDO::PARAM_INT);
@@ -81,6 +83,7 @@ if ($method === 'POST')
             :year
         )
     ';
+
     try {
         $s = $db->prepare($sql);
         $s->bindParam(':name', $data->name, PDO::PARAM_STR);
@@ -117,7 +120,3 @@ if ($method === 'DELETE')
         error_log(print_r($e->getMessage(),1).' '.__FILE__.' '.__LINE__,0);
     }
 }
-
-// foreach ($_SERVER as $k => $v) {
-//     error_log(print_r("$k : $v",1).' '.__FILE__.' '.__LINE__,0);
-// }

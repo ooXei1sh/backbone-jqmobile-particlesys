@@ -1,5 +1,5 @@
 <?php
-define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/jq-mobile-bbjs/server');
+define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/jq-mobile-bbjs/canvas');
 $db = new \PDO('mysql:host=127.0.0.1;dbname=bbjsdb','root','');
 $sql = 'SELECT * FROM books';
 $s = $db->prepare($sql);
@@ -19,53 +19,39 @@ $objs = $s->fetchAll(\PDO::FETCH_OBJ);
 <body>
 
 <div id="books" data-role="page" data-title="Books">
-
-      <div data-role="header">
-            <h1>Books</h1>
-      </div>
-
-      <div role="main" class="ui-content">
-            <h2>Books</h2>
-
-            <ul id="book-listview" data-role="listview" data-inset="true">
-                <?php foreach ($objs as $o){ ?>
-                <li>
-                    <a href="book/<?php echo $o->id; ?>" id="<?php echo $o->id; ?>" class="ajax-list-item"><?php echo $o->name; ?></a>
-                </li>
-                <?php } ?>
-            </ul>
-      </div><!-- /content -->
-
-</div>
-
-<div id="page-book" data-role="page" data-title="Book">
-
     <div data-role="header">
-        <h1>Book</h1>
-        <a href="#" data-rel="back">Back</a>
+        <h1>Canvas</h1>
     </div>
-
-    <div role="main" class="ui-content">
-        <div id="book-view" class="ui-bar ui-corner-all ui-overlay-shadow"></div>
+    <div data-role="content">
+        <div class="ui-grid-a ui-content ui-responsive">
+            <div class="ui-block-a">
+                <div id="canvas-listview" data-role="collapsible-set" data-inset="true"></div>
+            </div>
+            <div class="ui-block-b">
+                <div id="canvas-view" class="ui-btn ui-corner-all"></div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- book-listview-template tpl -->
-<script type="text/x-handlebars-template" id="book-listview-template">
-    {{#each item }}
-        <li>
-            {{item.name}}
-        </li>
-    {{/each}}
+<!-- templates -->
+<script type="text/x-handlebars-template" id="canvas-listview-template">
+    {{#each collection}}
+        <div data-role="collapsible" data-collapsed="true">
+            <h1 id="hl-{{ type }}" data-canvastype="{{ type }}" class="ajax-hl">{{ type }}</h1>
+            <p>
+                <button id="btn-start-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-power ui-btn-icon-left ui-shadow-icon ui-btn-c">Start</button>
+                <button id="btn-stop-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-forbidden ui-btn-icon-left ui-shadow-icon ui-btn-c">Stop</button>
+            </p>
+        </div>
+    {{/each }}
 </script>
 
-<!-- book-view-template tpl -->
-<script type="text/x-handlebars-template" id="book-view-template">
-    <p>Title: {{ item.name }}</p>
-    <p>Author: {{ item.author }}</p>
-    <p>Year: {{ item.year }}</p>
-    <button data-role="button" id="book-btn-delete" value="{{ item.id }}">Delete</button>
-    <a href="#" data-role="button" id="book-lnk-edit">Edit</a>
+<script type="text/x-handlebars-template" id="canvas-view-template">
+    {{!-- attributes: tabindex, title, class, accesskey, dir, draggable, hidden, etc... --}}
+    <canvas id="canvas" width="480" height="320">
+      Your browser does not support HTML5 Canvas.
+    </canvas>
 </script>
 
 <script src="<?php echo CONFIG_BASEURL; ?>/js/vendor/requirejs-master/require.js" data-main="<?php echo CONFIG_BASEURL; ?>/js/config"></script>
