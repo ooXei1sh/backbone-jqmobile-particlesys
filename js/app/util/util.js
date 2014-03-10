@@ -1,8 +1,16 @@
-function canvasSupport() {
-  return Modernizr.canvas;
-}
+// define([
+//     'jquery',
+//     'backbone'
+// ],
+// function($, Backbone){
 
-function randRange(min, max) {
-  //return min+(Math.floor(Math.random()*(max-min)));
-  return min+(Math.random()*(max-min));
-}
+//     function canvasSupport() {
+//       return Modernizr.canvas;
+//     }
+
+//     function randRange(min, max) {
+//       //return min+(Math.floor(Math.random()*(max-min)));
+//       return min+(Math.random()*(max-min));
+//     }
+
+// }

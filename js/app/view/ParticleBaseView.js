@@ -129,6 +129,7 @@ function($, Backbone, Mobile){
             }
 
             function loop(){
+                console.log(type);
                 renderBackground();
                 renderParticles();
             }
@@ -228,8 +229,20 @@ function($, Backbone, Mobile){
                 return r + ',' + g + ',' + b;
             }
 
+            function randRange(min, max) {
+              //return min+(Math.floor(Math.random()*(max-min)));
+              return min+(Math.random()*(max-min));
+            }
+
             // run
             var loopInterval = init();
+
+            // not a good solution.. but working.
+            // http://stackoverflow.com/questions/3141064/how-to-stop-all-timeouts-and-intervals-using-javascript
+            for (var i = 0 ; i < loopInterval; i++) {
+                clearTimeout(i);
+            }
+
         }
     });
 

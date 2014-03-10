@@ -3,11 +3,9 @@ define([
     'backbone',
     'app/collection/CanvasCollection',
     'app/view/CanvasListView',
-    'app/view/ParticleBaseView',
-    'app/view/CanvasView',
-    'app/view/Canvas2View'
+    'app/view/ParticleBaseView'
 ],
-function($, Backbone, CanvasCollection, CanvasListView, ParticleBaseView, CanvasView, Canvas2View){
+function($, Backbone, CanvasCollection, CanvasListView, ParticleBaseView){
 
     var AppRouter = Backbone.Router.extend({
 
