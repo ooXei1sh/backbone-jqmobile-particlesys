@@ -1,3 +1,8 @@
+#canvas {
+    -moz-border-radius: 5px;
+         border-radius: 5px;
+}
+
 .hidden {
     display: none;
 }

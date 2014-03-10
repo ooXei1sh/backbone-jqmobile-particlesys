@@ -3,20 +3,21 @@ define([
     'backbone',
     'app/collection/CanvasCollection',
     'app/view/CanvasListView',
+    'app/view/ParticleBaseView',
     'app/view/CanvasView',
     'app/view/Canvas2View'
 ],
-function($, Backbone, CanvasCollection, CanvasListView, CanvasView, Canvas2View){
+function($, Backbone, CanvasCollection, CanvasListView, ParticleBaseView, CanvasView, Canvas2View){
 
     var AppRouter = Backbone.Router.extend({
 
         initialize: function(){
-            console.log('itialize AppRouter.js');
+            // console.log('itialize AppRouter.js');
         },
 
         routes: {
             '': 'showCanvasList',
-            'canvas/:id': 'showCanvas'
+            'canvas/:type': 'showCanvas'
         },
 
         showCanvasList: function(){
@@ -25,24 +26,25 @@ function($, Backbone, CanvasCollection, CanvasListView, CanvasView, Canvas2View)
             var view = new CanvasListView({ collection: collection });
         },
 
-        showCanvas: function( id ){
-            console.log('route showCanvas');
+        showCanvas: function( type ){
+            // console.log('route showCanvas');
 
             var self = this;
 
-            switch ( id ) {
+            switch ( type ) {
 
-                case 'basic':
-                    var view = new CanvasView();
+                case 'base':
+                    new ParticleBaseView({type: type});
                     break;
 
-                case 'skel':
-                    var view = new Canvas2View();
+                case 'water':
+                    new ParticleBaseView({type: type});
                     break;
 
-                default:
-                    console.log('default');
+                case 'fire':
+                    new ParticleBaseView({type: type});
                     break;
+
             }
 
             // view.model.trigger('added');

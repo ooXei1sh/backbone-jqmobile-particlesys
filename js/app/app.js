@@ -6,8 +6,7 @@ require([
     'src'
 ],
 function($, Backbone, Mobile, AppRouter){
-
-    console.log('inside app.js');
+    // console.log('app.js');
 
     $(function() {
         var router = new AppRouter();

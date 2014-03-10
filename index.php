@@ -28,7 +28,7 @@ $objs = $s->fetchAll(\PDO::FETCH_OBJ);
                 <div id="canvas-listview" data-role="collapsible-set" data-inset="true"></div>
             </div>
             <div class="ui-block-b">
-                <div id="canvas-view" class="ui-btn ui-corner-all"></div>
+                <div id="canvas-view" class="ui-btn ui-corner-all ui-not-btn"></div>
             </div>
         </div>
     </div>
@@ -39,17 +39,33 @@ $objs = $s->fetchAll(\PDO::FETCH_OBJ);
     {{#each collection}}
         <div data-role="collapsible" data-collapsed="true">
             <h1 id="hl-{{ type }}" data-canvastype="{{ type }}" class="ajax-hl">{{ type }}</h1>
-            <p>
-                <button id="btn-start-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-power ui-btn-icon-left ui-shadow-icon ui-btn-c">Start</button>
+            <div data-role="fieldcontain">
+                <button id="btn-start-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-carat-r ui-btn-icon-left ui-shadow-icon ui-btn-c ui-disabled">Start</button>
                 <button id="btn-stop-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-forbidden ui-btn-icon-left ui-shadow-icon ui-btn-c">Stop</button>
-            </p>
+            </div>
+            <div data-role="fieldcontain">
+                {{#each fields.select}}
+                    <label for="inp-{{ name }}-{{ type }}">{{ label }}:</label>
+                    <select name="inp-{{ name }}-{{ type }}" id="inp-{{ name}}-{{ type }}">
+                        {{#each options}}
+                            <option value="{{ value }}" {{ selected }}>{{ label }}</option>
+                        {{/each}}
+                    </select>
+                {{/each}}
+            </div>
+            <div data-role="fieldcontain">
+                {{#each fields.range}}
+                    <label for="inp-{{ name }}-{{ type }}">{{ label }}:</label>
+                    <input type="range" name="inp-{{ name }}-{{ type }}" id="inp-{{ name }}-{{ type }}" min="{{ attr.min }}" max="{{ attr.max }}" value="{{ attr.value }}">
+                {{/each}}
+            </div>
         </div>
     {{/each }}
 </script>
 
 <script type="text/x-handlebars-template" id="canvas-view-template">
     {{!-- attributes: tabindex, title, class, accesskey, dir, draggable, hidden, etc... --}}
-    <canvas id="canvas" width="480" height="320">
+    <canvas id="canvas" width="{{ item.width }}" height="{{ item.height }}">
       Your browser does not support HTML5 Canvas.
     </canvas>
 </script>
