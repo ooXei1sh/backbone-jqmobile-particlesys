@@ -11,9 +11,9 @@ function($, Backbone, Mobile, AppRouter){
     $(function() {
         var router = new AppRouter();
         Backbone.history.start({
-            // .htaccess and root prop below must be set
+            // .htaccess and root below must be set
             pushState: true,
-            root: '/jq-mobile-bbjs/canvas'
+            root: '/backbone-jqmobile-particlesys'
         });
     });
 

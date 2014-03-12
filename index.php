@@ -1,10 +1,10 @@
 <?php
-define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/jq-mobile-bbjs/canvas');
-$db = new \PDO('mysql:host=127.0.0.1;dbname=bbjsdb','root','');
-$sql = 'SELECT * FROM books';
-$s = $db->prepare($sql);
-$s->execute();
-$objs = $s->fetchAll(\PDO::FETCH_OBJ);
+define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-particlesys');
+// $db = new \PDO('mysql:host=127.0.0.1;dbname=test','','');
+// $sql = 'SELECT * FROM test';
+// $s = $db->prepare($sql);
+// $s->execute();
+// $objs = $s->fetchAll(\PDO::FETCH_OBJ);
 ?>
 <!doctype html>
 <!--[if IEMobile 7 ]>    <html class="no-js iem7"> <![endif]-->
@@ -18,9 +18,9 @@ $objs = $s->fetchAll(\PDO::FETCH_OBJ);
 </head>
 <body>
 
-<div id="books" data-role="page" data-title="Books">
+<div data-role="page">
     <div data-role="header">
-        <h1>Canvas</h1>
+        <h1>Particle System</h1>
     </div>
     <div data-role="content">
         <div class="ui-grid-a ui-content ui-responsive">
@@ -31,6 +31,10 @@ $objs = $s->fetchAll(\PDO::FETCH_OBJ);
                 <div id="canvas-view" class="ui-btn ui-corner-all ui-not-btn"></div>
             </div>
         </div>
+    </div>
+
+    <div data-role="footer" data-position="fixed">
+        <h4></h4>
     </div>
 </div>
 
@@ -65,7 +69,8 @@ $objs = $s->fetchAll(\PDO::FETCH_OBJ);
 
 <script type="text/x-handlebars-template" id="canvas-view-template">
     {{!-- attributes: tabindex, title, class, accesskey, dir, draggable, hidden, etc... --}}
-    <canvas id="canvas" width="{{ item.width }}" height="{{ item.height }}">
+    {{!-- <canvas id="canvas" width="{{ item.width }}" height="{{ item.height }}"> --}}
+    <canvas id="canvas">
       Your browser does not support HTML5 Canvas.
     </canvas>
 </script>

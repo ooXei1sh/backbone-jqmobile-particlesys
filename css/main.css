@@ -1,3 +1,7 @@
+#canvas-view {
+    min-height: 320px;
+}
+
 #canvas {
     -moz-border-radius: 5px;
          border-radius: 5px;
@@ -10,6 +14,10 @@
 .ui-not-btn {
     cursor: default;
     text-align: left;
+    background-color: #333 !important;
+}
+div .ui-not-btn:hover {
+    background-color: #333 !important;
 }
 
 .ui-not-btn:hover{

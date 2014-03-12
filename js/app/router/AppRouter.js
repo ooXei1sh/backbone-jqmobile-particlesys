@@ -43,9 +43,13 @@ function($, Backbone, CanvasCollection, CanvasListView, ParticleBaseView){
                     new ParticleBaseView({type: type});
                     break;
 
+                case 'plume':
+                    new ParticleBaseView({type: type});
+                    break;
+
             }
 
-            // view.model.trigger('added');
+            // view.model.trigger('pagecreate');
         }
     });
 
