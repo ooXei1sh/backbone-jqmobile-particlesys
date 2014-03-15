@@ -2,9 +2,10 @@ define([
     'jquery',
     'backbone',
     'jquerymobile',
+    'app/model/CanvasModel',
     'handlebars'
 ],
-function($, Backbone, Mobile){
+function($, Backbone, Mobile, CanvasModel){
 
     var ParticleBaseView = Backbone.View.extend({
 
@@ -12,29 +13,32 @@ function($, Backbone, Mobile){
 
         template: Handlebars.compile( $('#canvas-view-template').html() ),
 
-        initialize: function(options){
-            // console.log('initialize CanvasView.js');
+        initialize: function(){
+
+            // console.log('initialize ParticleBaseView.js');
 
             var self = this;
 
-            self.options = options;
-
             self.render();
+
         },
 
         render: function(){
 
-            // console.log('render CanvasView.js');
+            // console.log('render ParticleBaseView.js');
 
             var self = this;
 
-            var type = self.options.type;
+            var type = self.model.get('type');
+
+            // console.log( self.model );
 
             var markup = self.template();
 
             self.$el.html(markup);
 
             $('#btn-start-'+type).addClass('ui-disabled');
+
             $('#btn-stop-'+type).removeClass('ui-disabled');
 
             // jquery mobile paint all elements within $el
@@ -47,11 +51,9 @@ function($, Backbone, Mobile){
 
         initParticles: function(options){
 
-            var
-                self = this,
-                type = self.options.type,
-                collection = self.options.collection
-            ;
+            var self = this;
+
+            var type = self.model.get('type');
 
             // if (!canvasSupport())
                 // return;
@@ -84,6 +86,7 @@ function($, Backbone, Mobile){
 
             // confs key'd by "name" from collection
             var conf = {
+                'type'         : type,
                 'random'       : isRandom,
                 'gravity'      : gravity,
                 'fade'         : fade,
@@ -111,24 +114,49 @@ function($, Backbone, Mobile){
             $(canvas).attr('height', $('#canvas-view').height());
 
             // interface events
+            $('#btn-export-'+type).click(function(e){
+                e.preventDefault();
+
+                var model = new CanvasModel();
+
+                // @todo: function to parse form data and create
+                //        the json for the fields table.
+                var json = self.makeJSON(conf);
+
+                console.log(json);
+
+                model.set('action', 'update');
+                model.set('type', type);
+                model.set('field', json);
+
+                model.save(model.attributes,
+                {
+                    success: function(model, response, options){
+                        console.log('Model saved');
+                    },
+                    error: function(model, xhr, options){
+                        console.log(model);
+                        console.log(xhr);
+                        console.log(options);
+                    }
+                });
+            });
+
             $('#btn-stop-'+type).click(function(e) {
+                e.preventDefault();
                 $(this).addClass('ui-disabled');
                 $('#btn-start-'+type).removeClass('ui-disabled');
                 clearInterval(loopInterval);
             });
 
             $('#btn-start-'+type).click(function(e) {
+                e.preventDefault();
                 $(this).addClass('ui-disabled');
                 $('#btn-stop-'+type).removeClass('ui-disabled');
                 loopInterval = init();
             });
 
-            // backbone collection methods are not working..
-            // model is null, and pulling from function not server?
-            // console.log(collection.at(0));
-
-            var json = collection.collection[0];
-            // console.log(json.fields);
+            var json = self.model.toJSON();
 
              // select list
              _.filter( json.fields.select, function(o){
@@ -295,6 +323,230 @@ function($, Backbone, Mobile){
             // http://stackoverflow.com/questions/3141064/how-to-stop-all-timeouts-and-intervals-using-javascript
             for (var i = 0 ; i < loopInterval; i++) {
                 clearTimeout(i);
+            }
+        },
+
+        makeJSON: function(conf){
+
+            return {
+                'canvas': '1',
+                'type': conf['type'],
+                'fields': {
+                    'select': [
+                        {
+                            'type': conf['type'],
+                            'name': 'bgcolor',
+                            'label': 'Background',
+                            'options': [
+                                {
+                                    'label': 'Black',
+                                    'value': 'k',
+                                    'selected': 'selected=selected'
+                                },
+                                {
+                                    'label': 'White',
+                                    'value': 'white',
+                                    'selected': ''
+                                },
+                                {
+                                    'label': 'Cyan',
+                                    'value': 'c',
+                                    'selected': ''
+                                },
+                                {
+                                    'label': 'Magenta',
+                                    'value': 'm',
+                                    'selected': ''
+                                },
+                                {
+                                    'label': 'Yellow',
+                                    'value': 'y',
+                                    'selected': ''
+                                },
+                                {
+                                    'label': 'Red',
+                                    'value': 'red',
+                                    'selected': ''
+                                },
+                                {
+                                    'label': 'Green',
+                                    'value': 'green',
+                                    'selected': ''
+                                },
+                                {
+                                    'label': 'Blue',
+                                    'value': 'blue',
+                                    'selected': ''
+                                }
+                            ]
+                        }
+                    ],
+                    'controlgroup': [
+                        {
+                            'type': conf['type'],
+                            'name': 'random',
+                            'label': 'Random',
+                            'checked': '',
+                            'value': 1
+                        }
+                    ],
+                    'rangeslider': [
+                        {
+                            'type': conf['type'],
+                            'label': 'Size',
+                            'attr': {
+                                'min': 1,
+                                'max': 10
+                            },
+                            'inputmin': {
+                                'name': 'sizemin',
+                                'value': conf['sizemin']
+                            },
+                            'inputmax': {
+                                'name': 'sizemax',
+                                'value': conf['sizemax']
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'label': 'Alpha',
+                            'attr': {
+                                'min': 1,
+                                'max': 10
+                            },
+                            'inputmin': {
+                                'name': 'alphamin',
+                                'value': conf['alphamin']
+                            },
+                            'inputmax': {
+                                'name': 'alphamax',
+                                'value': conf['alphamax']
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'label': 'Speed',
+                            'attr': {
+                                'min': 1,
+                                'max': 10
+                            },
+                            'inputmin': {
+                                'name': 'speedmin',
+                                'value': conf['speedmin']
+                            },
+                            'inputmax': {
+                                'name': 'speedmax',
+                                'value': conf['speedmax']
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'label': 'Grow',
+                            'attr': {
+                                'min': 1,
+                                'max': 10
+                            },
+                            'inputmin': {
+                                'name': 'growmin',
+                                'value': conf['growmin']
+                            },
+                            'inputmax': {
+                                'name': 'growmax',
+                                'value': conf['growmax']
+                            }
+                        }
+                    ],
+                    'range': [
+                        {
+                            'type': conf['type'],
+                            'name': 'gravity',
+                            'label': 'Gravity',
+                            'attr': {
+                                'min': -100,
+                                'max': 100,
+                                'value': conf['gravity'],
+                                'data-highlight': false
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'name': 'fade',
+                            'label': 'Fade',
+                            'attr': {
+                                'min': 0,
+                                'max': 100,
+                                'value': conf['fade'],
+                                'data-highlight': true
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'name': 'scatterx',
+                            'label': 'Scatter X',
+                            'attr': {
+                                'min': 0,
+                                'max': 320,
+                                'value': conf['scatterx'],
+                                'data-highlight': true
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'name': 'scattery',
+                            'label': 'Scatter Y',
+                            'attr': {
+                                'min': 0,
+                                'max': 320,
+                                'value': conf['scattery'],
+                                'data-highlight': true
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'name': 'colorr',
+                            'label': 'R',
+                            'attr': {
+                                'min': 0,
+                                'max': 255,
+                                'value': conf['colorr'],
+                                'data-highlight': true
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'name': 'colorg',
+                            'label': 'G',
+                            'attr': {
+                                'min': 0,
+                                'max': 255,
+                                'value': conf['colorg'],
+                                'data-highlight': true
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'name': 'colorb',
+                            'label': 'B',
+                            'attr': {
+                                'min': 0,
+                                'max': 255,
+                                'value': conf['colorb'],
+                                'data-highlight': true
+                            }
+                        },
+                        {
+                            'type': conf['type'],
+                            'name': 'colorvariant',
+                            'label': 'Color Variant',
+                            'attr': {
+                                'min': 1,
+                                'max': 100,
+                                'value': conf['colorvariant'],
+                                'data-highlight': true
+                            }
+                        }
+                    ]
+                }
             }
         }
     });

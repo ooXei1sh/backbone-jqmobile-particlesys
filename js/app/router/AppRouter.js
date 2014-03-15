@@ -2,10 +2,11 @@ define([
     'jquery',
     'backbone',
     'app/collection/CanvasCollection',
+    'app/model/CanvasModel',
     'app/view/CanvasListView',
     'app/view/ParticleBaseView'
 ],
-function($, Backbone, CanvasCollection, CanvasListView, ParticleBaseView){
+function($, Backbone, CanvasCollection, CanvasModel, CanvasListView, ParticleBaseView){
 
     var AppRouter = Backbone.Router.extend({
 
@@ -19,42 +20,71 @@ function($, Backbone, CanvasCollection, CanvasListView, ParticleBaseView){
         },
 
         showCanvasList: function(){
-            var
-                self = this,
-                collection = new CanvasCollection(),
-                view = new CanvasListView({ collection: collection })
-            ;
+
+            // console.log('route showCanvasList');
+
+            var self = this;
+
+            var data = $.param({
+                limit: 10
+            });
+
+            list = new CanvasCollection();
+
+            list.fetch({
+
+                data: data,
+
+                success: function(collection, response, options){
+
+                    // console.log(collection);
+                    // console.log(response);
+                    // console.log(options);
+
+                    var view = new CanvasListView({ collection: response });
+
+                },
+                error: function(collection, xhr, options){
+                    console.log('No results found.');
+                }
+            });
+
         },
 
         showCanvas: function( type ){
+
             // console.log('route showCanvas');
 
-            var
-                self = this,
-                collection = new CanvasCollection()
-            ;
+            var self = this;
 
-            switch ( type ) {
+            // @todo use id here..
+            var data = $.param({
+                type: type
+            });
 
-                case 'base':
-                    new ParticleBaseView({type: type, collection: collection});
-                    break;
+            // @todo rename canvas to particle?
+            item = new CanvasModel();
 
-                case 'water':
-                    new ParticleBaseView({type: type});
-                    break;
+            item.fetch({
 
-                case 'fire':
-                    new ParticleBaseView({type: type});
-                    break;
+                data: data,
 
-                case 'plume':
-                    new ParticleBaseView({type: type});
-                    break;
+                success: function(model, response, options){
 
-            }
+                    // console.log(model);
+                    // console.log(response);
+                    // console.log(options);
 
-            // view.model.trigger('pagecreate');
+                    // passed params are available on self object in ParticleBaseView
+                    var view = new ParticleBaseView({ model: model });
+
+                    // view.model.trigger('added');
+
+                },
+                error: function(model, xhr, options){
+                    console.log('No results found.');
+                }
+            });
         }
     });
 

@@ -41,11 +41,12 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
 <!-- templates -->
 <script type="text/x-handlebars-template" id="canvas-listview-template">
     {{#each collection}}
-        <div data-role="collapsible" data-collapsed="true">
-            <h1 id="hl-{{ type }}" data-canvastype="{{ type }}" class="ajax-hl">{{ type }}</h1>
+        <div data-role="collapsible" data-collapsed="true" data-canvastype="{{ type }}">
+            <h1 id="hl-{{ type }}" class="ajax-hl">{{ type }}</h1>
             <div data-role="fieldcontain">
                 <button id="btn-start-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-carat-r ui-btn-icon-left ui-shadow-icon ui-btn-c ui-disabled">Start</button>
                 <button id="btn-stop-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-forbidden ui-btn-icon-left ui-shadow-icon ui-btn-c">Stop</button>
+                <button id="btn-export-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-action ui-btn-icon-left ui-shadow-icon ui-btn-c">Export</button>
             </div>
             <div data-role="fieldcontain">
                 <fieldset data-role="controlgroup" data-type="horizontal">
@@ -83,7 +84,6 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
                     <input type="range" name="inp-{{ name }}-{{ type }}" id="inp-{{ name }}-{{ type }}" min="{{ attr.min }}" max="{{ attr.max }}" value="{{ attr.value }}" data-highlight="{{ attr.data-highlight }}">
                 {{/each}}
             </div>
-
         </div>
     {{/each }}
 </script>
