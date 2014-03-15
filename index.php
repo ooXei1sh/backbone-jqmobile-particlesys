@@ -48,6 +48,17 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
                 <button id="btn-stop-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-forbidden ui-btn-icon-left ui-shadow-icon ui-btn-c">Stop</button>
             </div>
             <div data-role="fieldcontain">
+                <fieldset data-role="controlgroup" data-type="horizontal">
+                    {{#each fields.controlgroup}}
+                        <legend>Options:</legend>
+                        <label for="inp-{{ name }}-{{ type }}">
+                            <input type="checkbox" name="inp-{{ name }}-{{ type }}" id="inp-{{ name }}-{{ type }}" value="{{ value }}" {{ checked }}>
+                                {{ label }}
+                        </label>
+                    {{/each}}
+                </fieldset>
+            </div>
+            <div data-role="fieldcontain">
                 {{#each fields.select}}
                     <label for="inp-{{ name }}-{{ type }}">{{ label }}:</label>
                     <select name="inp-{{ name }}-{{ type }}" id="inp-{{ name}}-{{ type }}">
@@ -58,11 +69,21 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
                 {{/each}}
             </div>
             <div data-role="fieldcontain">
+                 {{#each fields.rangeslider}}
+                    <div data-role="rangeslider">
+                        <label for="inp-{{ name }}-{{ type }}">{{ label }}:</label>
+                        <input type="range" name="inp-{{ inputmin.name }}-{{ type }}" id="inp-{{ inputmin.name }}-{{ type }}" min="{{ attr.min }}" max="{{ attr.max }}" value="{{ inputmin.value }}">
+                        <input type="range" name="inp-{{ inputmax.name }}-{{ type }}" id="inp-{{ inputmax.name }}-{{ type }}" min="{{ attr.min }}" max="{{ attr.max }}" value="{{ inputmax.value }}">
+                    </div>
+                {{/each}}
+            </div>
+            <div data-role="fieldcontain">
                 {{#each fields.range}}
                     <label for="inp-{{ name }}-{{ type }}">{{ label }}:</label>
                     <input type="range" name="inp-{{ name }}-{{ type }}" id="inp-{{ name }}-{{ type }}" min="{{ attr.min }}" max="{{ attr.max }}" value="{{ attr.value }}">
                 {{/each}}
             </div>
+
         </div>
     {{/each }}
 </script>

@@ -47,37 +47,64 @@ function($, Backbone, Mobile){
 
         initParticles: function(options){
 
-            var self = this;
-
-            var type = self.options.type;
+            var
+                self = this,
+                type = self.options.type,
+                collection = self.options.collection
+            ;
 
             // if (!canvasSupport())
                 // return;
 
             var
-            canvas       = document.getElementById('canvas'),
-            c            = canvas.getContext('2d'), // console.log(c);
-            loopInterval = null,
-            particles    = [],
-            gravity      = $('#inp-gravity-'+type).val()/100,
-            fade         = ($('#inp-fade-'+type).val() >= 10) ? '0.10' : '0.0'+$('#inp-fade-'+type).val(),
-            sizeMin      = 1,
-            sizeMax      = $('#inp-size-'+type).val(),
-            growMin      = 0.0,
-            growMax      = ($('#inp-grow-'+type).val() >= 10) ? 1.0 : '0.'+$('#inp-grow-'+type).val(),
-            speedMin     = 1,
-            speedMax     = $('#inp-speed-'+type).val(),
-            scatterX     = $('#inp-scatterx-'+type).val(),
-            scatterY     = $('#inp-scattery-'+type).val(),
-            alphaMin     = 0.01,
-            alphaMax     = ($('#inp-alpha-'+type).val() >= 10) ? 1.0 : '0.'+$('#inp-alpha-'+type).val(),
-            colors       = [],
-            colorVariant = $('#inp-colorvariant-'+type).val(),
-            color        = $('#inp-color-'+type).val(),
-            bgcolor      = $('#inp-bgcolor-'+type).val();
+                canvas       = document.getElementById('canvas'),
+                c            = canvas.getContext('2d'), // console.log(c);
+                loopInterval = null,
+                particles    = [],
+                isRandom     = $('#inp-random-'+type).prop('checked'),
+                gravity      = $('#inp-gravity-'+type).val(),
+                fade         = $('#inp-fade-'+type).val(),
+                sizeMin      = $('#inp-sizemin-'+type).val(),
+                sizeMax      = $('#inp-sizemax-'+type).val(),
+                growMin      = 0,
+                growMax      = $('#inp-grow-'+type).val(),
+                speedMin     = 1,
+                speedMax     = $('#inp-speed-'+type).val(),
+                scatterX     = $('#inp-scatterx-'+type).val(),
+                scatterY     = $('#inp-scattery-'+type).val(),
+                alphaMin     = $('#inp-alphamin-'+type).val(),
+                alphaMax     = $('#inp-alphamax-'+type).val(),
+                colors       = [],
+                colorR       = $('#inp-colorr-'+type).val(),
+                colorG       = $('#inp-colorg-'+type).val(),
+                colorB       = $('#inp-colorb-'+type).val(),
+                colorVariant = $('#inp-colorvariant-'+type).val(),
+                bgcolor      = $('#inp-bgcolor-'+type).val()
+            ;
+
+            // confs key'd by "name" from collection
+            var conf = {
+                'random'       : isRandom,
+                'gravity'      : gravity,
+                'fade'         : fade,
+                'sizemin'      : sizeMin,
+                'sizemax'      : sizeMax,
+                'alphamin'     : alphaMin,
+                'alphamax'     : alphaMax,
+                'grow'         : growMax,
+                'speed'        : speedMax,
+                'scatterx'     : scatterX,
+                'scattery'     : scatterY,
+                'colorr'       : colorR,
+                'colorg'       : colorG,
+                'colorb'       : colorB,
+                'colorvariant' : colorVariant,
+                'bgcolor'      : bgcolor
+            };
 
             // http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
 
+            // set canvas width and height
             $(canvas).attr('width', $('#canvas-view').width());
             $(canvas).attr('height', $('#canvas-view').height());
 
@@ -94,59 +121,54 @@ function($, Backbone, Mobile){
                 loopInterval = init();
             });
 
-            $('#inp-color-'+type).change(function(){
-                var inp = $(this).val();
-                color = inp;
+            // backbone collection methods are not working..
+            // model is null, and pulling from function not server?
+            // console.log(collection.at(0));
+
+            var json = collection.collection[0];
+            // console.log(json.fields);
+
+             // select list
+             _.filter( json.fields.select, function(o){
+                $('#inp-'+o.name+'-'+o.type).change(function(e){
+
+                    console.log(o.name);
+                    e.preventDefault();
+                    var inp = $(this).val();
+                    conf[o.name] = inp;
+                });
             });
 
-            $('#inp-bgcolor-'+type).change(function(){
-                var inp = $(this).val();
-                bgcolor = inp;
+             // controlgroup
+             _.filter( json.fields.controlgroup, function(o){
+                $('#inp-'+o.name+'-'+o.type).change(function(e){
+                    e.preventDefault();
+                    var inp = $(this).prop('checked');
+                    conf[o.name] = inp;
+                });
             });
 
-            $('#inp-gravity-'+type).change(function(){
-                var inp = $(this).val()/100;
-                gravity = inp;
+            // range
+            _.filter( json.fields.range, function(o){
+                $('#inp-'+o.name+'-'+o.type).change(function(e){
+                    e.preventDefault();
+                    var inp = $(this).val();
+                    conf[o.name] = inp;
+                });
             });
 
-            $('#inp-colorvariant-'+type).change(function(){
-                var inp = $(this).val();
-                colorVariant = inp;
-            });
-
-            $('#inp-speed-'+type).change(function(){
-                var inp = $(this).val();
-                speedMax = inp;
-            });
-
-            $('#inp-size-'+type).change(function(){
-                var inp = $(this).val();
-                sizeMax = inp;
-            });
-
-            $('#inp-alpha-'+type).change(function(){
-                var inp = $(this).val();
-                alphaMax = (inp >= 10) ? '1.0' :'0.'+inp;
-            });
-
-            $('#inp-fade-'+type).change(function(){
-                var inp = $(this).val();
-                fade = (inp >= 10) ? '0.10' :'0.0'+inp;
-            });
-
-            $('#inp-scatterx-'+type).change(function(){
-                var inp = $(this).val();
-                scatterX = inp;
-            });
-
-            $('#inp-scattery-'+type).change(function(){
-                var inp = $(this).val();
-                scatterY = inp;
-            });
-
-            $('#inp-grow-'+type).change(function(){
-                var inp = $(this).val();
-                growMax = (inp >= 10) ? '1.0' : '0.'+inp;
+            // rangeslider
+            _.filter( json.fields.rangeslider, function(o){
+                $('#inp-'+o.inputmin.name+'-'+o.type).change(function(e){
+                    e.preventDefault();
+                    var inp = $(this).val();
+                    conf[o.inputmin.name] = inp;
+                });
+                $('#inp-'+o.inputmax.name+'-'+o.type).change(function(e){
+                    e.preventDefault();
+                    var inp = $(this).val();
+                    conf[o.inputmax.name] = inp;
+                });
             });
 
             function init(){
@@ -174,13 +196,13 @@ function($, Backbone, Mobile){
 
                     // move
                     p.x += p.xvel;
-                    p.y += p.yvel += gravity*2;
+                    p.y += p.yvel += (conf['gravity']/100)*2;
 
                     // fade
-                    p.alpha -= fade;
+                    p.alpha -= conf['fade']*0.0004;
 
                     // grow
-                    p.size += p.grow;
+                    p.size += p.grow*0.1;
 
                     // render
                     c.fillStyle = 'rgba(' + p.rgb + ',' + p.alpha + ')';
@@ -201,35 +223,41 @@ function($, Backbone, Mobile){
             function particleObject(){
 
                 var
-                    size    = Math.floor( Math.random() * sizeMax ) + sizeMin,
-                    speed   = Math.floor( Math.random() * speedMax ) + speedMin,
+                    size    = (conf['random']) ? Math.floor( Math.random() * (conf['sizemax']*0.5) ) + (conf['sizemin']*0.5)
+                                                 : Math.floor( (conf['sizemax']*0.5) ) + (conf['sizemin']*0.5),
+
+                    speed   = (conf['random']) ? Math.floor( Math.random() * conf['speed'] ) + speedMin
+                                                 : Math.floor( conf['speed'] ) + speedMin,
+
+                    alpha   = (conf['random']) ? Math.floor( Math.random() * (conf['alphamax']*0.1) ) + (conf['alphamin']*0.1)
+                                                 : Math.floor( (conf['alphamax']*0.1) ) + (conf['alphamin']*0.1),
+
                     angle   = Math.floor( Math.random() * 360 ),
                     radians = angle * Math.PI / 180,
-                    xpos    = canvas.width / 2 - size / 2 + randRange( -scatterX, scatterX ),
-                    ypos    = canvas.height / 2 - size / 2 + randRange( -scatterY, scatterY ),
+                    xpos    = canvas.width / 2 - size / 2 + randRange( -conf['scatterx'], conf['scatterx'] ),
+                    ypos    = canvas.height / 2 - size / 2 + randRange( -conf['scattery'], conf['scattery'] ),
                     xvel    = Math.cos( radians ) * speed,
                     yvel    = Math.sin( radians ) * speed,
-                    rgb     = colorVariation( colors[color] ),
-                    alpha   = randRange( alphaMin, alphaMax ),
-                    grow    = randRange( growMin, growMax )
+                    rgb     = colorVariation( conf['colorr'] + ',' + conf['colorg'] + ',' + conf['colorb'] ),
+                    grow    = Math.floor( randRange( growMin, conf['grow'] ) );
                 ;
 
                 return {
-                    x: xpos,
-                    y: ypos,
-                    xvel: xvel,
-                    yvel: yvel,
-                    size: size,
-                    grow: grow,
+                    x:     xpos,
+                    y:     ypos,
+                    xvel:  xvel,
+                    yvel:  yvel,
+                    size:  size,
+                    grow:  grow,
                     speed: speed,
                     angle: angle,
-                    rgb: rgb,
+                    rgb:   rgb,
                     alpha: alpha
                 };
             }
 
             function renderBackground(){
-                c.fillStyle = 'rgb('+colors[bgcolor]+')';
+                c.fillStyle = 'rgb('+colors[conf['bgcolor']]+')';
                 c.fillRect(0,0,canvas.width,canvas.height);
             }
 
@@ -247,15 +275,15 @@ function($, Backbone, Mobile){
             function colorVariation(color){
                 var
                     rgb_array = color.split(','),
-                    r = Math.floor( randRange( rgb_array[0] / colorVariant, rgb_array[0] ) ),
-                    g = Math.floor( randRange( rgb_array[1] / colorVariant, rgb_array[1] ) ),
-                    b = Math.floor( randRange( rgb_array[2] / colorVariant, rgb_array[2] ) )
+                    r = Math.floor( randRange( rgb_array[0] / conf['colorvariant'], rgb_array[0] ) ),
+                    g = Math.floor( randRange( rgb_array[1] / conf['colorvariant'], rgb_array[1] ) ),
+                    b = Math.floor( randRange( rgb_array[2] / conf['colorvariant'], rgb_array[2] ) )
                 ;
                 return r + ',' + g + ',' + b;
             }
 
             function randRange(min, max) {
-              return min+(Math.random()*(max-min));
+              return Math.random() * (max - min) + min;
             }
 
             // run

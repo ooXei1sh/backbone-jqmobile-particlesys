@@ -19,20 +19,25 @@ function($, Backbone, CanvasCollection, CanvasListView, ParticleBaseView){
         },
 
         showCanvasList: function(){
-            var self = this;
-            var collection = new CanvasCollection();
-            var view = new CanvasListView({ collection: collection });
+            var
+                self = this,
+                collection = new CanvasCollection(),
+                view = new CanvasListView({ collection: collection })
+            ;
         },
 
         showCanvas: function( type ){
             // console.log('route showCanvas');
 
-            var self = this;
+            var
+                self = this,
+                collection = new CanvasCollection()
+            ;
 
             switch ( type ) {
 
                 case 'base':
-                    new ParticleBaseView({type: type});
+                    new ParticleBaseView({type: type, collection: collection});
                     break;
 
                 case 'water':
