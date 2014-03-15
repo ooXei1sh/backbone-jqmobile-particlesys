@@ -80,7 +80,7 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
             <div data-role="fieldcontain">
                 {{#each fields.range}}
                     <label for="inp-{{ name }}-{{ type }}">{{ label }}:</label>
-                    <input type="range" name="inp-{{ name }}-{{ type }}" id="inp-{{ name }}-{{ type }}" min="{{ attr.min }}" max="{{ attr.max }}" value="{{ attr.value }}">
+                    <input type="range" name="inp-{{ name }}-{{ type }}" id="inp-{{ name }}-{{ type }}" min="{{ attr.min }}" max="{{ attr.max }}" value="{{ attr.value }}" data-highlight="{{ attr.data-highlight }}">
                 {{/each}}
             </div>
 

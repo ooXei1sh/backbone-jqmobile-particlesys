@@ -61,20 +61,20 @@ function($, Backbone, Mobile){
                 c            = canvas.getContext('2d'), // console.log(c);
                 loopInterval = null,
                 particles    = [],
+                colors       = [],
                 isRandom     = $('#inp-random-'+type).prop('checked'),
                 gravity      = $('#inp-gravity-'+type).val(),
                 fade         = $('#inp-fade-'+type).val(),
                 sizeMin      = $('#inp-sizemin-'+type).val(),
                 sizeMax      = $('#inp-sizemax-'+type).val(),
-                growMin      = 0,
-                growMax      = $('#inp-grow-'+type).val(),
-                speedMin     = 1,
-                speedMax     = $('#inp-speed-'+type).val(),
+                growMin      = $('#inp-growmin-'+type).val(),
+                growMax      = $('#inp-growmax-'+type).val(),
+                speedMin     = $('#inp-speedmin-'+type).val(),
+                speedMax     = $('#inp-speedmax-'+type).val(),
                 scatterX     = $('#inp-scatterx-'+type).val(),
                 scatterY     = $('#inp-scattery-'+type).val(),
                 alphaMin     = $('#inp-alphamin-'+type).val(),
                 alphaMax     = $('#inp-alphamax-'+type).val(),
-                colors       = [],
                 colorR       = $('#inp-colorr-'+type).val(),
                 colorG       = $('#inp-colorg-'+type).val(),
                 colorB       = $('#inp-colorb-'+type).val(),
@@ -91,8 +91,10 @@ function($, Backbone, Mobile){
                 'sizemax'      : sizeMax,
                 'alphamin'     : alphaMin,
                 'alphamax'     : alphaMax,
-                'grow'         : growMax,
-                'speed'        : speedMax,
+                'speedmin'     : speedMin,
+                'speedmax'     : speedMax,
+                'growmin'      : growMin,
+                'growmax'      : growMax,
                 'scatterx'     : scatterX,
                 'scattery'     : scatterY,
                 'colorr'       : colorR,
@@ -131,8 +133,6 @@ function($, Backbone, Mobile){
              // select list
              _.filter( json.fields.select, function(o){
                 $('#inp-'+o.name+'-'+o.type).change(function(e){
-
-                    console.log(o.name);
                     e.preventDefault();
                     var inp = $(this).val();
                     conf[o.name] = inp;
@@ -223,14 +223,17 @@ function($, Backbone, Mobile){
             function particleObject(){
 
                 var
-                    size    = (conf['random']) ? Math.floor( Math.random() * (conf['sizemax']*0.5) ) + (conf['sizemin']*0.5)
-                                                 : Math.floor( (conf['sizemax']*0.5) ) + (conf['sizemin']*0.5),
+                    size    = (conf['random']) ? randRange(conf['sizemax']*1, conf['sizemin']*1)
+                                               : conf['sizemax']*1,
 
-                    speed   = (conf['random']) ? Math.floor( Math.random() * conf['speed'] ) + speedMin
-                                                 : Math.floor( conf['speed'] ) + speedMin,
+                    speed   = (conf['random']) ? randRange(conf['speedmax']*1, conf['speedmin']*1)
+                                               : conf['speedmax'],
 
-                    alpha   = (conf['random']) ? Math.floor( Math.random() * (conf['alphamax']*0.1) ) + (conf['alphamin']*0.1)
-                                                 : Math.floor( (conf['alphamax']*0.1) ) + (conf['alphamin']*0.1),
+                    alpha   = (conf['random']) ? randRange(conf['alphamax']*0.1, conf['alphamin']*0.1)
+                                               : conf['alphamax']*0.1,
+
+                    grow    = (conf['random']) ? randRange(conf['growmax']*0.1, conf['growmin']*0.1)
+                                               : conf['growmax']*0.1,
 
                     angle   = Math.floor( Math.random() * 360 ),
                     radians = angle * Math.PI / 180,
@@ -238,8 +241,7 @@ function($, Backbone, Mobile){
                     ypos    = canvas.height / 2 - size / 2 + randRange( -conf['scattery'], conf['scattery'] ),
                     xvel    = Math.cos( radians ) * speed,
                     yvel    = Math.sin( radians ) * speed,
-                    rgb     = colorVariation( conf['colorr'] + ',' + conf['colorg'] + ',' + conf['colorb'] ),
-                    grow    = Math.floor( randRange( growMin, conf['grow'] ) );
+                    rgb     = colorVariation( conf['colorr'] + ',' + conf['colorg'] + ',' + conf['colorb'] )
                 ;
 
                 return {

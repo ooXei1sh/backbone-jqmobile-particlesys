@@ -56,12 +56,13 @@ function($, Backbone ){
             ];
         },
 
-        rangeArray: function(min, max, value){
+        rangeArray: function(min, max, value, data_highlight = true){
 
             return {
                 'min': min,
                 'max': max,
-                'value': value
+                'value': value,
+                'data-highlight': data_highlight
             };
         },
 
@@ -87,7 +88,7 @@ function($, Backbone ){
                                 'type': 'base',
                                 'name': 'random',
                                 'label': 'Random',
-                                'checked': 'checked=checked',
+                                'checked': '',
                                 'value': 1
                             }
                         ],
@@ -98,24 +99,50 @@ function($, Backbone ){
                                 'attr': self.rangeArray(1,100,1),
                                 'inputmin': {
                                     'name': 'sizemin',
-                                    'value': 2
+                                    'value': 1
                                 },
                                 'inputmax': {
                                     'name': 'sizemax',
-                                    'value': 12
+                                    'value': 1
                                 }
                             },
                             {
                                 'type': 'base',
                                 'label': 'Alpha',
-                                'attr': self.rangeArray(0,10,1),
+                                'attr': self.rangeArray(1,10,1),
                                 'inputmin': {
                                     'name': 'alphamin',
-                                    'value': 6
+                                    'value': 10
                                 },
                                 'inputmax': {
                                     'name': 'alphamax',
-                                    'value': 9
+                                    'value': 10
+                                }
+                            },
+                            {
+                                'type': 'base',
+                                'label': 'Speed',
+                                'attr': self.rangeArray(1,10,1),
+                                'inputmin': {
+                                    'name': 'speedmin',
+                                    'value': 1
+                                },
+                                'inputmax': {
+                                    'name': 'speedmax',
+                                    'value': 1
+                                }
+                            },
+                            {
+                                'type': 'base',
+                                'label': 'Grow',
+                                'attr': self.rangeArray(0,10,1),
+                                'inputmin': {
+                                    'name': 'growmin',
+                                    'value': 0
+                                },
+                                'inputmax': {
+                                    'name': 'growmax',
+                                    'value': 0
                                 }
                             }
                         ],
@@ -124,7 +151,25 @@ function($, Backbone ){
                                 'type': 'base',
                                 'name': 'gravity',
                                 'label': 'Gravity',
-                                'attr': self.rangeArray(-100,100,0)
+                                'attr': self.rangeArray(-100,100,0,false)
+                            },
+                            {
+                                'type': 'base',
+                                'name': 'fade',
+                                'label': 'Fade',
+                                'attr': self.rangeArray(0,100,10)
+                            },
+                            {
+                                'type': 'base',
+                                'name': 'scatterx',
+                                'label': 'Scatter X',
+                                'attr': self.rangeArray(0,320,0)
+                            },
+                            {
+                                'type': 'base',
+                                'name': 'scattery',
+                                'label': 'Scatter Y',
+                                'attr': self.rangeArray(0,320,0)
                             },
                             {
                                 'type': 'base',
@@ -149,38 +194,7 @@ function($, Backbone ){
                                 'name': 'colorvariant',
                                 'label': 'Color Variant',
                                 'attr': self.rangeArray(1,100,1)
-                            },
-                            {
-                                'type': 'base',
-                                'name': 'speed',
-                                'label': 'Speed',
-                                'attr': self.rangeArray(0,100,1)
-                            },
-                            {
-                                'type': 'base',
-                                'name': 'fade',
-                                'label': 'Fade',
-                                'attr': self.rangeArray(0,100,10)
-                            },
-                            {
-                                'type': 'base',
-                                'name': 'scatterx',
-                                'label': 'Scatter X',
-                                'attr': self.rangeArray(0,320,1)
-                            },
-                            {
-                                'type': 'base',
-                                'name': 'scattery',
-                                'label': 'Scatter Y',
-                                'attr': self.rangeArray(0,320,1)
-                            },
-                            {
-                                'type': 'base',
-                                'name': 'grow',
-                                'label': 'Grow',
-                                'attr': self.rangeArray(0,10,0)
                             }
-
                         ]
                     }
                 }
