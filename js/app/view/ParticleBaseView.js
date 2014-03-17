@@ -2,10 +2,12 @@ define([
     'jquery',
     'backbone',
     'jquerymobile',
+    'app/collection/CanvasCollection',
     'app/model/CanvasModel',
+    'app/view/CanvasListView',
     'handlebars'
 ],
-function($, Backbone, Mobile, CanvasModel){
+function($, Backbone, Mobile, CanvasCollection, CanvasModel, CanvasListView){
 
     var ParticleBaseView = Backbone.View.extend({
 
@@ -15,11 +17,18 @@ function($, Backbone, Mobile, CanvasModel){
 
         initialize: function(){
 
+            // http://stackoverflow.com/questions/15206980/this-model-not-working-on-clicked-view-backbone-js
+
             // console.log('initialize ParticleBaseView.js');
 
             var self = this;
 
-            self.render();
+            self.listenTo(self.model, 'add', self.render);
+
+            // force fire reset event
+            // self.model.fetch({});
+            // self.listenTo(self.model, 'change', self.render);
+            // self.render();
 
         },
 
@@ -30,8 +39,6 @@ function($, Backbone, Mobile, CanvasModel){
             var self = this;
 
             var type = self.model.get('type');
-
-            // console.log( self.model );
 
             var markup = self.template();
 
@@ -114,34 +121,6 @@ function($, Backbone, Mobile, CanvasModel){
             $(canvas).attr('height', $('#canvas-view').height());
 
             // interface events
-            $('#btn-export-'+type).click(function(e){
-                e.preventDefault();
-
-                var model = new CanvasModel();
-
-                // @todo: function to parse form data and create
-                //        the json for the fields table.
-                var json = self.makeJSON(conf);
-
-                console.log(json);
-
-                model.set('action', 'update');
-                model.set('type', type);
-                model.set('field', json);
-
-                model.save(model.attributes,
-                {
-                    success: function(model, response, options){
-                        console.log('Model saved');
-                    },
-                    error: function(model, xhr, options){
-                        console.log(model);
-                        console.log(xhr);
-                        console.log(options);
-                    }
-                });
-            });
-
             $('#btn-stop-'+type).click(function(e) {
                 e.preventDefault();
                 $(this).addClass('ui-disabled');
@@ -156,10 +135,58 @@ function($, Backbone, Mobile, CanvasModel){
                 loopInterval = init();
             });
 
+            $('#btn-export-'+type).on({
+                click: function(e){
+                    e.preventDefault();
+
+                    if ( type === 'add' ){
+
+                        // insert
+                        self.popupInputType(conf);
+
+                    }
+                    else {
+
+                        // update
+                        var json = self.makeJSON(conf);
+                        self.saveParticle('update', type, json);
+
+                    }
+                }
+            });
+
+            $('#btn-delete-'+type).click(function(e) {
+                e.preventDefault();
+
+                console.log('btn-delete-'+type);
+
+                // $(this).addClass('ui-disabled');
+
+                // clearInterval(loopInterval);
+
+                // // @todo use id here..
+                // var data = $.param({
+                //     method: 'DELETE',
+                //     type: type
+                // });
+
+                // self.model.destroy({
+                //     data : data,
+                //     success: function(e) {
+                //         console.log(e);
+                //     },
+                //     error: function(e){
+                //         console.log(e);
+                //     }
+                // });
+
+            });
+
+            // canvas form evetns
             var json = self.model.toJSON();
 
              // select list
-             _.filter( json.fields.select, function(o){
+             _.each( json.field.select, function(o){
                 $('#inp-'+o.name+'-'+o.type).change(function(e){
                     e.preventDefault();
                     var inp = $(this).val();
@@ -168,7 +195,7 @@ function($, Backbone, Mobile, CanvasModel){
             });
 
              // controlgroup
-             _.filter( json.fields.controlgroup, function(o){
+             _.each( json.field.controlgroup, function(o){
                 $('#inp-'+o.name+'-'+o.type).change(function(e){
                     e.preventDefault();
                     var inp = $(this).prop('checked');
@@ -177,7 +204,7 @@ function($, Backbone, Mobile, CanvasModel){
             });
 
             // range
-            _.filter( json.fields.range, function(o){
+            _.each( json.field.range, function(o){
                 $('#inp-'+o.name+'-'+o.type).change(function(e){
                     e.preventDefault();
                     var inp = $(this).val();
@@ -186,7 +213,7 @@ function($, Backbone, Mobile, CanvasModel){
             });
 
             // rangeslider
-            _.filter( json.fields.rangeslider, function(o){
+            _.each( json.field.rangeslider, function(o){
                 $('#inp-'+o.inputmin.name+'-'+o.type).change(function(e){
                     e.preventDefault();
                     var inp = $(this).val();
@@ -326,12 +353,77 @@ function($, Backbone, Mobile, CanvasModel){
             }
         },
 
+        popupInputType: function(conf){
+
+            var self = this;
+
+            var $input = $('#popup-form-type form input');
+
+            var $popup = $('#popup-form-type').popup({
+                afteropen: function( event, ui ) {
+                    $input.focus();
+                },
+                afterclose: function( event, ui ) {
+                    $input.val('');
+                },
+            });
+
+            // insert, append and expand new particle form
+            $('#popup-form-type form').one({
+                submit: function(e){
+                    e.preventDefault();
+
+                    var type = $input.val();
+
+                    conf['type'] = type;
+
+                    self.saveParticle('insert', type, self.makeJSON(conf));
+
+                    $popup.popup('close');
+
+                }
+            });
+
+            $popup.popup('open');
+        },
+
+        saveParticle: function(action, type, json){
+
+            var self = this;
+
+            var model = new CanvasModel();
+
+            model.set('action', action);
+            model.set('type', type);
+            model.set('field', json);
+
+            model.save(model.attributes,
+            {
+                success: function(model, response, options){
+
+                    if (action === 'insert'){
+                        $('#canvas-listview div:first-child').remove();
+                        Backbone.history.navigate('', true);
+                    }
+                    else {
+                        // blink
+                    }
+
+                },
+                error: function(model, xhr, options){
+                    console.log(model);
+                    console.log(xhr);
+                    console.log(options);
+                }
+            });
+        },
+
         makeJSON: function(conf){
 
             return {
                 'canvas': '1',
                 'type': conf['type'],
-                'fields': {
+                'field': {
                     'select': [
                         {
                             'type': conf['type'],
@@ -341,42 +433,42 @@ function($, Backbone, Mobile, CanvasModel){
                                 {
                                     'label': 'Black',
                                     'value': 'k',
-                                    'selected': 'selected=selected'
+                                    'selected': conf['bgcolor'] === 'k' ? 'selected=selected' : ''
                                 },
                                 {
                                     'label': 'White',
                                     'value': 'white',
-                                    'selected': ''
+                                    'selected': conf['bgcolor'] === 'white' ? 'selected=selected' : ''
                                 },
                                 {
                                     'label': 'Cyan',
                                     'value': 'c',
-                                    'selected': ''
+                                    'selected': conf['bgcolor'] === 'c' ? 'selected=selected' : ''
                                 },
                                 {
                                     'label': 'Magenta',
                                     'value': 'm',
-                                    'selected': ''
+                                    'selected': conf['bgcolor'] === 'm' ? 'selected=selected' : ''
                                 },
                                 {
                                     'label': 'Yellow',
                                     'value': 'y',
-                                    'selected': ''
+                                    'selected': conf['bgcolor'] === 'y' ? 'selected=selected' : ''
                                 },
                                 {
                                     'label': 'Red',
                                     'value': 'red',
-                                    'selected': ''
+                                    'selected': conf['bgcolor'] === 'red' ? 'selected=selected' : ''
                                 },
                                 {
                                     'label': 'Green',
                                     'value': 'green',
-                                    'selected': ''
+                                    'selected': conf['bgcolor'] === 'green' ? 'selected=selected' : ''
                                 },
                                 {
                                     'label': 'Blue',
                                     'value': 'blue',
-                                    'selected': ''
+                                    'selected': conf['bgcolor'] === 'blue' ? 'selected=selected' : ''
                                 }
                             ]
                         }
@@ -386,7 +478,7 @@ function($, Backbone, Mobile, CanvasModel){
                             'type': conf['type'],
                             'name': 'random',
                             'label': 'Random',
-                            'checked': '',
+                            'checked': conf['random'] ? 'checked=checked' : '',
                             'value': 1
                         }
                     ],

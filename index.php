@@ -25,6 +25,7 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
     <div data-role="content">
         <div class="ui-grid-a ui-content ui-responsive">
             <div class="ui-block-a">
+                <button id="btn-add-particle" data-type="add" class="ui-btn ui-corner-all ui-icon-star ui-btn-icon-left ui-shadow-icon ui-btn-c">New Particle</button>
                 <div id="canvas-listview" data-role="collapsible-set" data-inset="true"></div>
             </div>
             <div class="ui-block-b">
@@ -33,24 +34,34 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
         </div>
     </div>
 
-    <div data-role="footer" data-position="fixed">
-        <h4></h4>
+    <div data-role="popup" id="popup-form-type" data-transition="flip" data-theme="a" data-overlay-theme="a" class="ui-content" data-dismissible="true">
+        <span class="ui-bar ui-shadow ui-overlay-d ui-corner-all">
+            <form>
+                <input type="text" name="type" class="input-text" maxlength="255">
+                <button>Go</button>
+            </form>
+        </span>
     </div>
+
+    <!-- <div data-role="footer" data-position="fixed"> -->
+        <!-- <h4></h4> -->
+    <!-- </div> -->
 </div>
 
 <!-- templates -->
 <script type="text/x-handlebars-template" id="canvas-listview-template">
     {{#each collection}}
-        <div data-role="collapsible" data-collapsed="true" data-canvastype="{{ type }}">
+        <div data-role="collapsible" data-collapsed="true" data-type="{{ type }}">
             <h1 id="hl-{{ type }}" class="ajax-hl">{{ type }}</h1>
             <div data-role="fieldcontain">
                 <button id="btn-start-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-carat-r ui-btn-icon-left ui-shadow-icon ui-btn-c ui-disabled">Start</button>
                 <button id="btn-stop-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-forbidden ui-btn-icon-left ui-shadow-icon ui-btn-c">Stop</button>
-                <button id="btn-export-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-action ui-btn-icon-left ui-shadow-icon ui-btn-c">Export</button>
+                <button id="btn-export-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-action ui-btn-icon-left ui-shadow-icon ui-btn-c">Update</button>
+                <button id="btn-delete-{{ type }}" class="ui-btn ui-corner-all ui-btn-inline ui-icon-forbidden ui-btn-icon-left ui-shadow-icon ui-btn-c">Delete</button>
             </div>
             <div data-role="fieldcontain">
                 <fieldset data-role="controlgroup" data-type="horizontal">
-                    {{#each fields.controlgroup}}
+                    {{#each field.controlgroup}}
                         <legend>Options:</legend>
                         <label for="inp-{{ name }}-{{ type }}">
                             <input type="checkbox" name="inp-{{ name }}-{{ type }}" id="inp-{{ name }}-{{ type }}" value="{{ value }}" {{ checked }}>
@@ -60,7 +71,7 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
                 </fieldset>
             </div>
             <div data-role="fieldcontain">
-                {{#each fields.select}}
+                {{#each field.select}}
                     <label for="inp-{{ name }}-{{ type }}">{{ label }}:</label>
                     <select name="inp-{{ name }}-{{ type }}" id="inp-{{ name}}-{{ type }}">
                         {{#each options}}
@@ -70,7 +81,7 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
                 {{/each}}
             </div>
             <div data-role="fieldcontain">
-                 {{#each fields.rangeslider}}
+                 {{#each field.rangeslider}}
                     <div data-role="rangeslider">
                         <label for="inp-{{ name }}-{{ type }}">{{ label }}:</label>
                         <input type="range" name="inp-{{ inputmin.name }}-{{ type }}" id="inp-{{ inputmin.name }}-{{ type }}" min="{{ attr.min }}" max="{{ attr.max }}" value="{{ inputmin.value }}">
@@ -79,7 +90,7 @@ define('CONFIG_BASEURL', 'http://'.$_SERVER['HTTP_HOST'].'/backbone-jqmobile-par
                 {{/each}}
             </div>
             <div data-role="fieldcontain">
-                {{#each fields.range}}
+                {{#each field.range}}
                     <label for="inp-{{ name }}-{{ type }}">{{ label }}:</label>
                     <input type="range" name="inp-{{ name }}-{{ type }}" id="inp-{{ name }}-{{ type }}" min="{{ attr.min }}" max="{{ attr.max }}" value="{{ attr.value }}" data-highlight="{{ attr.data-highlight }}">
                 {{/each}}

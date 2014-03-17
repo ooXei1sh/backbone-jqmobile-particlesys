@@ -30,6 +30,4 @@ require([
     'src'
 ],
 function($, Backbone, Mobile, AppRouter){
-    // $.mobile.linkBindingEnabled = false;
-    // $.mobile.hashListeningEnabled = false;
 });

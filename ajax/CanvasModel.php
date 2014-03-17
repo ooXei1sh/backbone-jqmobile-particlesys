@@ -7,6 +7,7 @@ $table = 'canvas';
 
 // method
 $method = $_SERVER['REQUEST_METHOD'];
+$method = isset($_GET['method']) ? $_GET['method'] : $method;
 // error_log('method: '.print_r($method,1).' '.__FILE__.' '.__LINE__,0);
 
 // headers
@@ -16,6 +17,8 @@ $headers = getallheaders();
 // data raw
 $data = file_get_contents('php://input','rb');
 // error_log('raw data: '.print_r($data,1).' '.__FILE__.' '.__LINE__,0);
+
+
 
 if ($method === 'GET')
 {
@@ -112,8 +115,10 @@ if ($method === 'POST')
     echo json_encode($data);
 }
 
+error_log(print_r($_GET,1).' '.__FILE__.' '.__LINE__,0);
 if ($method === 'DELETE')
 {
+    error_log(print_r('delete',1).' '.__FILE__.' '.__LINE__,0);
     $uri_parts = explode('/', $_SERVER['REQUEST_URI']);
     $id = (int) array_pop($uri_parts);
     $sql = "

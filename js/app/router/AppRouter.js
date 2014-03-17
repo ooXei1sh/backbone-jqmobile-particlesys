@@ -16,6 +16,7 @@ function($, Backbone, CanvasCollection, CanvasModel, CanvasListView, ParticleBas
 
         routes: {
             '': 'showCanvasList',
+            'canvas/add': 'addParticle',
             'canvas/:type': 'showCanvas'
         },
 
@@ -29,19 +30,15 @@ function($, Backbone, CanvasCollection, CanvasModel, CanvasListView, ParticleBas
                 limit: 10
             });
 
-            list = new CanvasCollection();
+            var collection = new CanvasCollection();
 
-            list.fetch({
+            collection.fetch({
 
                 data: data,
 
                 success: function(collection, response, options){
 
-                    // console.log(collection);
-                    // console.log(response);
-                    // console.log(options);
-
-                    var view = new CanvasListView({ collection: response });
+                    var view = new CanvasListView({ collection: collection });
 
                 },
                 error: function(collection, xhr, options){
@@ -49,6 +46,35 @@ function($, Backbone, CanvasCollection, CanvasModel, CanvasListView, ParticleBas
                 }
             });
 
+        },
+
+        addParticle: function(){
+
+            // console.log('route addParticle');
+
+            // only add one particle at a time..
+            // @todo: add multiple particles at a time, could be all int id based
+            if (!$('#canvas-listview div a:contains("add")').length){
+
+                var model = new CanvasModel();
+
+                // console.log(model);
+
+                var view = new ParticleBaseView({ model: model });
+
+                var collection = new CanvasCollection();
+
+                collection.add(model);
+
+                // console.log(collection);
+
+                var view = new CanvasListView({ collection: collection });
+
+                // add button
+                $('#canvas-listview div a:contains("add")').trigger('click');
+
+                model.trigger('add');
+            }
         },
 
         showCanvas: function( type ){
@@ -62,23 +88,18 @@ function($, Backbone, CanvasCollection, CanvasModel, CanvasListView, ParticleBas
                 type: type
             });
 
-            // @todo rename canvas to particle?
-            item = new CanvasModel();
+            var model = new CanvasModel();
 
-            item.fetch({
+            model.fetch({
 
                 data: data,
 
                 success: function(model, response, options){
 
-                    // console.log(model);
-                    // console.log(response);
-                    // console.log(options);
-
                     // passed params are available on self object in ParticleBaseView
                     var view = new ParticleBaseView({ model: model });
 
-                    // view.model.trigger('added');
+                    view.model.trigger('add');
 
                 },
                 error: function(model, xhr, options){
