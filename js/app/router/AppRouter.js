@@ -1,12 +1,12 @@
 define([
     'jquery',
     'backbone',
-    'app/collection/CanvasCollection',
-    'app/model/CanvasModel',
-    'app/view/CanvasListView',
-    'app/view/ParticleBaseView'
+    'app/collection/ParticleCollection',
+    'app/model/ParticleModel',
+    'app/view/ParticleListView',
+    'app/view/ParticleView'
 ],
-function($, Backbone, CanvasCollection, CanvasModel, CanvasListView, ParticleBaseView){
+function($, Backbone, ParticleCollection, ParticleModel, ParticleListView, ParticleView){
 
     var AppRouter = Backbone.Router.extend({
 
@@ -15,14 +15,14 @@ function($, Backbone, CanvasCollection, CanvasModel, CanvasListView, ParticleBas
         },
 
         routes: {
-            '': 'showCanvasList',
-            'canvas/add': 'addParticle',
-            'canvas/:type': 'showCanvas'
+            '': 'showParticleList',
+            'particle/add': 'addParticle',
+            'particle/:id': 'showParticle'
         },
 
-        showCanvasList: function(){
+        showParticleList: function(){
 
-            // console.log('route showCanvasList');
+            // console.log('route showParticleList');
 
             var self = this;
 
@@ -30,22 +30,51 @@ function($, Backbone, CanvasCollection, CanvasModel, CanvasListView, ParticleBas
                 limit: 10
             });
 
-            var collection = new CanvasCollection();
+            var list = new ParticleCollection();
 
-            collection.fetch({
+            list.fetch({
 
                 data: data,
 
                 success: function(collection, response, options){
 
-                    var view = new CanvasListView({ collection: collection });
+                    var view = new ParticleListView({ collection: collection });
 
                 },
                 error: function(collection, xhr, options){
-                    console.log('No results found.');
+                    console.log(collection);
+                    console.log(xhr);
+                    console.log(options);
                 }
             });
 
+        },
+
+        showParticle: function( id ){
+
+            // console.log('route showParticle');
+
+            var self = this;
+
+            var item = new ParticleModel();
+
+            item.set('id', id);
+
+            item.fetch({
+
+                success: function(model, response, options){
+
+                    var view = new ParticleView({ model: model });
+
+                    view.model.trigger('add');
+
+                },
+                error: function(model, xhr, options){
+                    console.log(model);
+                    console.log(xhr);
+                    console.log(options);
+                }
+            });
         },
 
         addParticle: function(){
@@ -54,59 +83,29 @@ function($, Backbone, CanvasCollection, CanvasModel, CanvasListView, ParticleBas
 
             // only add one particle at a time..
             // @todo: add multiple particles at a time, could be all int id based
-            if (!$('#canvas-listview div a:contains("add")').length){
+            if (!$('#particle-listview div a:contains("add")').length){
 
-                var model = new CanvasModel();
+                var model = new ParticleModel();
 
                 // console.log(model);
 
-                var view = new ParticleBaseView({ model: model });
+                var view = new ParticleView({ model: model });
 
-                var collection = new CanvasCollection();
+                var collection = new ParticleCollection();
 
                 collection.add(model);
 
                 // console.log(collection);
 
-                var view = new CanvasListView({ collection: collection });
+                var view = new ParticleListView({ collection: collection });
 
                 // add button
-                $('#canvas-listview div a:contains("add")').trigger('click');
+                $('#particle-listview div a:contains("add")').trigger('click');
 
                 model.trigger('add');
             }
-        },
-
-        showCanvas: function( type ){
-
-            // console.log('route showCanvas');
-
-            var self = this;
-
-            // @todo use id here..
-            var data = $.param({
-                type: type
-            });
-
-            var model = new CanvasModel();
-
-            model.fetch({
-
-                data: data,
-
-                success: function(model, response, options){
-
-                    // passed params are available on self object in ParticleBaseView
-                    var view = new ParticleBaseView({ model: model });
-
-                    view.model.trigger('add');
-
-                },
-                error: function(model, xhr, options){
-                    console.log('No results found.');
-                }
-            });
         }
+
     });
 
     return AppRouter;

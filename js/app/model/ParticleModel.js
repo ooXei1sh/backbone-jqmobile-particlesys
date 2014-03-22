@@ -6,19 +6,18 @@ function($, Backbone ){
 
     var CavasModel = Backbone.Model.extend({
 
-        urlRoot: '/backbone-jqmobile-particlesys/ajax/CanvasModel.php',
+        urlRoot: '/backbone-jqmobile-particlesys/ajax/ParticleModel.php',
 
         initialize: function(){
         },
 
         defaults:
         {
-            'canvas': '0',
-            'type': 'add',
+            'id': '0',
+            'name': 'add',
             'field': {
                 'select': [
                     {
-                        'type': 'add',
                         'name': 'bgcolor',
                         'label': 'Background',
                         'options': [
@@ -67,16 +66,20 @@ function($, Backbone ){
                 ],
                 'controlgroup': [
                     {
-                        'type': 'add',
                         'name': 'random',
                         'label': 'Random',
+                        'checked': '',
+                        'value': 1
+                    },
+                    {
+                        'name': 'colorvariant',
+                        'label': 'Color Variant',
                         'checked': '',
                         'value': 1
                     }
                 ],
                 'rangeslider': [
                     {
-                        'type': 'add',
                         'label': 'Size',
                         'attr': {
                             'min': 1,
@@ -92,7 +95,6 @@ function($, Backbone ){
                         }
                     },
                     {
-                        'type': 'add',
                         'label': 'Alpha',
                         'attr': {
                             'min': 1,
@@ -108,7 +110,6 @@ function($, Backbone ){
                         }
                     },
                     {
-                        'type': 'add',
                         'label': 'Speed',
                         'attr': {
                             'min': 1,
@@ -124,7 +125,6 @@ function($, Backbone ){
                         }
                     },
                     {
-                        'type': 'add',
                         'label': 'Grow',
                         'attr': {
                             'min': 1,
@@ -142,7 +142,6 @@ function($, Backbone ){
                 ],
                 'range': [
                     {
-                        'type': 'add',
                         'name': 'gravity',
                         'label': 'Gravity',
                         'attr': {
@@ -153,7 +152,6 @@ function($, Backbone ){
                         }
                     },
                     {
-                        'type': 'add',
                         'name': 'fade',
                         'label': 'Fade',
                         'attr': {
@@ -164,7 +162,6 @@ function($, Backbone ){
                         }
                     },
                     {
-                        'type': 'add',
                         'name': 'scatterx',
                         'label': 'Scatter X',
                         'attr': {
@@ -175,7 +172,6 @@ function($, Backbone ){
                         }
                     },
                     {
-                        'type': 'add',
                         'name': 'scattery',
                         'label': 'Scatter Y',
                         'attr': {
@@ -186,7 +182,6 @@ function($, Backbone ){
                         }
                     },
                     {
-                        'type': 'add',
                         'name': 'colorr',
                         'label': 'R',
                         'attr': {
@@ -197,7 +192,6 @@ function($, Backbone ){
                         }
                     },
                     {
-                        'type': 'add',
                         'name': 'colorg',
                         'label': 'G',
                         'attr': {
@@ -208,24 +202,12 @@ function($, Backbone ){
                         }
                     },
                     {
-                        'type': 'add',
                         'name': 'colorb',
                         'label': 'B',
                         'attr': {
                             'min': 0,
                             'max': 255,
                             'value': 255,
-                            'data-highlight': true
-                        }
-                    },
-                    {
-                        'type': 'add',
-                        'name': 'colorvariant',
-                        'label': 'Color Variant',
-                        'attr': {
-                            'min': 1,
-                            'max': 100,
-                            'value': 1,
                             'data-highlight': true
                         }
                     }

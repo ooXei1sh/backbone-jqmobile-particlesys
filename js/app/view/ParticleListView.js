@@ -6,19 +6,15 @@ define([
 ],
 function($, Backbone, Mobile){
 
-    var CanvasListView = Backbone.View.extend({
+    var ParticleListView = Backbone.View.extend({
 
-        el:'#canvas-listview',
+        el:'#particle-listview',
 
-        events:{
-            'click .ajax-hl': 'routeToCanvas',
-        },
-
-        template: Handlebars.compile( $('#canvas-listview-template').html() ),
+        template: Handlebars.compile( $('#particle-listview-template').html() ),
 
         initialize: function(){
 
-            // console.log('initialize CanvasListView.js');
+            // console.log('initialize ParticleListView.js');
 
             var self = this;
 
@@ -30,9 +26,11 @@ function($, Backbone, Mobile){
 
         render: function(){
 
-            // console.log('render CanvasListView.js');
+            // console.log('render ParticleListView.js');
 
             var self = this;
+
+            // console.log(self.collection.toJSON());
 
             var markup = self.template({ collection: self.collection.toJSON() });
 
@@ -49,21 +47,22 @@ function($, Backbone, Mobile){
 
             self.$el.trigger( 'create' );
 
-            // jquery mobile event bindings
+            // jquery mobile event binding
             self.$el.on( 'collapsibleexpand', function( event, ui ){
-                var data = $( event.target ).data();
-                Backbone.history.navigate('canvas/'+data.type, true);
+                var id = $( event.target ).data( 'id' );
+                if ( id !== 0 ){
+                    Backbone.history.navigate( 'particle/' + id, true );
+                }
             });
 
             // add new particle
             $('#btn-add-particle').on('click', function( event ){
-                var data = $( event.target ).data();
-                Backbone.history.navigate('canvas/'+data.type, true);
+                Backbone.history.navigate('particle/add', true);
             });
 
             return self;
         }
     });
 
-    return CanvasListView;
+    return ParticleListView;
 });

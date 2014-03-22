@@ -1,45 +1,28 @@
 <?php
-// error_log('server: '.print_r($_SERVER,1).' '.__FILE__.' '.__LINE__,0);
-
-$db = new PDO('mysql:host=127.0.0.1;dbname=bbjqmcanvasdb','root','');
-
-$table = 'canvas';
-
-// method
-$method = $_SERVER['REQUEST_METHOD'];
-$method = isset($_GET['method']) ? $_GET['method'] : $method;
-// error_log('method: '.print_r($method,1).' '.__FILE__.' '.__LINE__,0);
-
-// headers
-$headers = getallheaders();
-// error_log('headers: '.print_r($headers,1).' '.__FILE__.' '.__LINE__,0);
-
-// data raw
-$data = file_get_contents('php://input','rb');
-// error_log('raw data: '.print_r($data,1).' '.__FILE__.' '.__LINE__,0);
-
-
+require_once 'init.php';
 
 if ($method === 'GET')
 {
-    // error_log(print_r($_GET,1).' '.__FILE__.' '.__LINE__,0);
-    $type = (string) $_GET['type'];
-    // error_log(print_r($type,1).' '.__FILE__.' '.__LINE__,0);
+    $id = (int) array_pop(explode('/', $_SERVER['REQUEST_URI']));
 
     $sql = "
         SELECT
         *
         FROM $table
-        WHERE type = :type
+        WHERE id = :id
         LIMIT 1
     ";
     try {
         $s = $db->prepare($sql);
-        $s->bindParam(':type', $type, PDO::PARAM_STR);
+        $s->bindParam(':id', $id, PDO::PARAM_INT);
         $s->execute();
         if ($s->rowCount()){
             $o = $s->fetchObject();
-            $data = json_decode($o->field);
+            $data = array(
+                'id' => $o->id,
+                'name' => $o->name,
+                'field' => (array) json_decode($o->field),
+            );
         }
     }
     catch(Exception $e){
@@ -47,13 +30,17 @@ if ($method === 'GET')
     }
     // error_log(print_r($data,1).' '.__FILE__.' '.__LINE__,0);
 
+    // sanitize($data);
+
     echo json_encode($data);
 }
 
-if ($method === 'POST')
+if ($method === 'PUT')
 {
+    $data = file_get_contents('php://input','rb');
+    // error_log(print_r($data,1).' '.__FILE__.' '.__LINE__,0);
+
     $data = json_decode($data);
-    // error_log(print_r($data,1).' '.__FILE__.' '.__LINE__,0); exit();
 
     switch ($data->action) {
 
@@ -62,14 +49,16 @@ if ($method === 'POST')
             $sql = "
                 UPDATE $table
                 SET
+                    name = :name,
                     field = :field
                 WHERE
-                    type = :type
+                    id = :id
                 LIMIT 1
             ";
             try {
                 $s = $db->prepare($sql);
-                $s->bindParam(':type', $data->type, PDO::PARAM_STR);
+                $s->bindParam(':id', $data->id, PDO::PARAM_INT);
+                $s->bindParam(':name', $data->name, PDO::PARAM_STR);
                 $s->bindParam(':field', json_encode($data->field), PDO::PARAM_STR);
                 $s->execute();
                 $data->id = $db->lastInsertId();
@@ -85,17 +74,17 @@ if ($method === 'POST')
             $sql = "
                 INSERT INTO $table
                 (
-                    type,
+                    name,
                     field
                 )
                 VALUES (
-                    :type,
+                    :name,
                     :field
                 )
             ";
             try {
                 $s = $db->prepare($sql);
-                $s->bindParam(':type', $data->type, PDO::PARAM_STR);
+                $s->bindParam(':name', $data->name, PDO::PARAM_STR);
                 $s->bindParam(':field', json_encode($data->field), PDO::PARAM_STR);
                 $s->execute();
                 $data->id = $db->lastInsertId();
@@ -115,12 +104,10 @@ if ($method === 'POST')
     echo json_encode($data);
 }
 
-error_log(print_r($_GET,1).' '.__FILE__.' '.__LINE__,0);
 if ($method === 'DELETE')
 {
-    error_log(print_r('delete',1).' '.__FILE__.' '.__LINE__,0);
-    $uri_parts = explode('/', $_SERVER['REQUEST_URI']);
-    $id = (int) array_pop($uri_parts);
+    $id = (int) array_pop(explode('/', $_SERVER['REQUEST_URI']));
+
     $sql = "
         DELETE FROM $table
         WHERE id = :id
