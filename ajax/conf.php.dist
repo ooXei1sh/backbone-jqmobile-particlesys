@@ -1,0 +1,7 @@
+<?php
+
+$dbhost = 'localhost';
+$dbname = 'bbjqmcanvasdb';
+$table = 'particle';
+$dbuser = '';
+$dbpass = '';
